@@ -16,7 +16,7 @@
 #   2. 3.3 V rail       Is the regulator output really 3.3 V?
 #   3. Flash firmware   Load the firmware. Is the right version on the board?
 #   4. Read sensor      Does the sensor give a sensible temperature?
-#   5. Temperature log  Record the temperature for 2 seconds. Is it stable?
+#   5. Temperature log  Record the temperature for 5 seconds. Is it stable?
 #   6. LED check        The operator looks at the LED: green or red?
 #   (5 and 6 are switched off for now: see STEP 5 and STEP 6 at the end)
 #
@@ -28,6 +28,7 @@
 #   plugs/bench.py     the instruments (power supply, multimeter...)
 #   phases/sib200.py   the 5 steps, one Python function each
 #   images/            the pictures shown to the operator
+#   panels/            custom operator screens, in HTML (Power on, Temperature log)
 #
 # HOW TO RUN IT
 # Open a terminal in this folder, then:
@@ -110,7 +111,8 @@ plugs:
 #   depends_on     this phase runs only after the phase listed here, and
 #                  only if it passed. Without it, phases run in parallel.
 #   ui             what the operator sees during this phase: pictures,
-#                  questions, a progress bar... (optional)
+#                  questions... or a whole screen of your own in HTML
+#                  with `panel:` (optional)
 #
 # The Python code only measures. The limits written here decide PASS or FAIL,
 # so you can change a limit without touching the code.
@@ -142,6 +144,8 @@ main:
     name: Power on
     python: phases.sib200:power_on
     description: The board is powered at 24 V and its current is measured.
+    ui:
+      panel: panels/psu.html                # a bench power supply, drawn in HTML
     measurements:
       - key: idle_current
         name: idle_current
@@ -205,11 +209,11 @@ main:
 
   # ---------------------------------------------------------------------------
   # STEP 5: TEMPERATURE LOG (switched off: this is step 3 of the workshop)
-  # Record the temperature for 2 seconds, 100 readings.
+  # Record the temperature for 5 seconds, 100 readings.
   # The result is a curve: time on the x axis, temperature on the y axis.
   # A limit cannot apply to 100 points at once, so we check two numbers
   # computed from them (called "aggregations"): the lowest and the highest.
-  # A progress bar shows the operator how far the recording is.
+  # The operator watches the curve being drawn live: panels/temperature.html.
   # The Python is already written: phases/sib200.py, temperature_log.
   #
   # To switch the phase on, remove the "# " in front of every line of the
@@ -219,14 +223,9 @@ main:
   - key: temperature_log
     name: Temperature log
     python: phases.sib200:temperature_log
-    description: The board temperature is recorded for 2 seconds.
+    description: The board temperature is recorded for 5 seconds.
     ui:
-      components:
-        - key: progress
-          type: progress                    # a bar, filled by the Python code
-          label: Recording
-          min: 0
-          max: 100
+      panel: panels/temperature.html        # the curve, drawn live as it is recorded
     measurements:
       - key: temperature_log
         name: Temperature log
