@@ -216,37 +216,37 @@ main:
   # block below, from "- key: temperature_log" down to "- read_sensor".
   # Keep the spaces. In VS Code: select the lines, then Ctrl+/ (macOS Cmd+/).
   # ---------------------------------------------------------------------------
-  # - key: temperature_log
-  #   name: Temperature log
-  #   python: phases.sib200:temperature_log
-  #   description: The board temperature is recorded for 2 seconds.
-  #   ui:
-  #     components:
-  #       - key: progress
-  #         type: progress                    # a bar, filled by the Python code
-  #         label: Recording
-  #         min: 0
-  #         max: 100
-  #   measurements:
-  #     - key: temperature_log
-  #       name: Temperature log
-  #       x_axis:                             # horizontal axis: time
-  #         key: time
-  #         unit: s
-  #       y_axis:                             # vertical axis: temperature
-  #         - key: temperature
-  #           unit: "°C"
-  #           aggregations:
-  #             - type: min                   # the lowest reading: at least 15 °C
-  #               validators:
-  #                 - operator: ">="
-  #                   expected_value: 15
-  #             - type: max                   # the highest reading: at most 35 °C
-  #               validators:
-  #                 - operator: "<="
-  #                   expected_value: 35
-  #   depends_on:
-  #     - read_sensor
+  - key: temperature_log
+    name: Temperature log
+    python: phases.sib200:temperature_log
+    description: The board temperature is recorded for 2 seconds.
+    ui:
+      components:
+        - key: progress
+          type: progress                    # a bar, filled by the Python code
+          label: Recording
+          min: 0
+          max: 100
+    measurements:
+      - key: temperature_log
+        name: Temperature log
+        x_axis:                             # horizontal axis: time
+          key: time
+          unit: s
+        y_axis:                             # vertical axis: temperature
+          - key: temperature
+            unit: "°C"
+            aggregations:
+              - type: min                   # the lowest reading: at least 15 °C
+                validators:
+                  - operator: ">="
+                    expected_value: 15
+              - type: max                   # the highest reading: at most 35 °C
+                validators:
+                  - operator: "<="
+                    expected_value: 35
+    depends_on:
+      - read_sensor
 
 
   # ---------------------------------------------------------------------------
@@ -260,28 +260,28 @@ main:
   # below, from "- key: led_check" down to "- temperature_log". It needs
   # STEP 5 switched on first (depends_on).
   # ---------------------------------------------------------------------------
-  # - key: led_check
-  #   name: LED check
-  #   description: Look at the LED next to the connector. Which colour is it?
-  #   ui:
-  #     components:
-  #       - key: led_color
-  #         type: radio                       # one choice, shown as image cards
-  #         label: Which colour is the LED?
-  #         options:
-  #           - label: Green
-  #             value: green
-  #             image: images/led-green.png   # relative to this folder
-  #           - label: Red
-  #             value: red
-  #             image: images/led-red.png
-  #         required: true                    # Continue waits for a choice
-  #         bind: measurements.led_color      # the choice becomes this measurement
-  #   measurements:
-  #     - key: led_color
-  #       name: led_color
-  #       validators:
-  #         - operator: "=="                  # green is the only PASS
-  #           expected_value: green
-  #   depends_on:
-  #     - temperature_log
+  - key: led_check
+    name: LED check
+    description: Look at the LED next to the connector. Which colour is it?
+    ui:
+      components:
+        - key: led_color
+          type: radio                       # one choice, shown as image cards
+          label: Which colour is the LED?
+          options:
+            - label: Green
+              value: green
+              image: images/led-green.png   # relative to this folder
+            - label: Red
+              value: red
+              image: images/led-red.png
+          required: true                    # Continue waits for a choice
+          bind: measurements.led_color      # the choice becomes this measurement
+    measurements:
+      - key: led_color
+        name: led_color
+        validators:
+          - operator: "=="                  # green is the only PASS
+            expected_value: green
+    depends_on:
+      - temperature_log
